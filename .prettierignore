@@ -1,0 +1,12 @@
+# testing
+/coverage
+
+# Ignore artifacts:
+/build
+/node_modules
+
+# Ignore files:
+/public
+/src/index.css
+package.lock.json
+yarn.lock
