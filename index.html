@@ -7,7 +7,48 @@
     <link rel="stylesheet" href="./index.css" />
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div class="container" data="container">
+        <div class="table-container" data="table-container">
+          <p class="winner">
+            👑 A the winner is one of (forMinusEqual, reverseForLoop,
+            forMinusMinus)
+
+            <span class="winner-name" data="winner-name"></span>
+          </p>
+          <p data="active-run">Active run #0</p>
+          <p>
+            Array size:
+            <span data="array-size"></span>
+          </p>
+          <table data="table">
+            <thead>
+              <tr>
+                <th class="test-name" rowspan="2">Name</th>
+                <th class="test-passed" rowspan="2">
+                  Array values are equal in asc order
+                </th>
+                <th class="test-reps" colspan="5">
+                  Avg. time elapsed ⏳ per amount of reps 🔁
+                </th>
+                <th class="test-reps-total" rowspan="2">
+                  Total avg. time elapsed ⏳
+                </th>
+              </tr>
+              <tr>
+                <th>10</th>
+                <th>100</th>
+                <th>1000</th>
+                <th>10000</th>
+                <th>100000</th>
+              </tr>
+            </thead>
+            <tbody data="table-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
     <script type="module" src="./index.js"></script>
   </body>
 </html>

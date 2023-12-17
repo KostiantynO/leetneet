@@ -1,3 +1,12 @@
+// best for array size 10000 and low amount of reps (40)
+const forMinusEqual = array => {
+  const result = [];
+
+  for (let i = array.length - 1; i >= 0; i -= 1) result.push(array[i] * 2);
+
+  return result;
+};
+
 // fastest based on average of 10 runs for 10000000 elements array.
 const reverseForLoop = array => {
   const result = [];
@@ -7,6 +16,16 @@ const reverseForLoop = array => {
   return result;
 };
 
+// avg. fastest on small and large amounts of reps
+const forMinusMinus = array => {
+  const result = [];
+
+  for (let i = array.length - 1; i >= 0; i--) result.push(array[i] * 2);
+
+  return result;
+};
+
+// best for array size 10000 and mid amount of reps (100)
 const minusMinusWhile = array => {
   const result = [];
 
@@ -44,42 +63,11 @@ const whilePlusPlus = array => {
   return result;
 };
 
-const forMinusEqualSaveLength = array => {
-  const result = [];
-
-  for (let i = array.length - 1, lastIndex = 0; i >= lastIndex; i -= 1) {
-    result.push(array[i] * 2);
-  }
-
-  return result;
-};
-
-const forMinusMinus = array => {
-  const result = [];
-
-  for (let i = array.length - 1; i >= 0; i--) {
-    result.push(array[i] * 2);
-  }
-
-  return result;
-};
-
-const forMinusMinusSaveLength = array => {
-  const result = [];
-
-  for (let i = array.length - 1, lastIndex = 0; i >= lastIndex; i--) {
-    result.push(array[i] * 2);
-  }
-
-  return result;
-};
-
 const forPlusPlusSaveLength = array => {
   const result = [];
 
-  for (let i = 0, lastIndex = array.length; i < lastIndex; i++) {
+  for (let i = 0, lastIndex = array.length; i < lastIndex; i++)
     result.push(array[i] * 2);
-  }
 
   return result;
 };
@@ -87,9 +75,7 @@ const forPlusPlusSaveLength = array => {
 const forPlusPlus = array => {
   const result = [];
 
-  for (let i = 0; i < array.length; i++) {
-    result.push(array[i] * 2);
-  }
+  for (let i = 0; i < array.length; i++) result.push(array[i] * 2);
 
   return result;
 };
@@ -97,9 +83,8 @@ const forPlusPlus = array => {
 const forPlusEqualSaveLength = array => {
   const result = [];
 
-  for (let i = 0, len = array.length; i < len; i += 1) {
+  for (let i = 0, len = array.length; i < len; i += 1)
     result.push(array[i] * 2);
-  }
 
   return result;
 };
@@ -107,9 +92,7 @@ const forPlusEqualSaveLength = array => {
 const forPlusEqual = array => {
   const result = [];
 
-  for (let i = 0; i < array.length; i += 1) {
-    result.push(array[i] * 2);
-  }
+  for (let i = 0; i < array.length; i += 1) result.push(array[i] * 2);
 
   return result;
 };
@@ -127,29 +110,31 @@ const forEach = array => {
 const forOf = object => {
   const result = [];
 
-  for (const iterator of object) {
-    result.push(iterator * 2);
-  }
+  for (const iterator of object) result.push(iterator * 2);
 
   return result;
 };
 
 const getRef = {
   root: () => document.querySelector('#root'),
+  container: () => document.querySelector('[data="container"]'),
+  runTestsButton: () => document.querySelector('[data="run"]'),
+  tableContainer: () => document.querySelector('[data="table-container"]'),
+  tableBody: () => document.querySelector('[data="table-body"]'),
+  progressLabel: () => document.querySelector('[data="progress-label"]'),
+  progress: () => document.querySelector('[data="progress"]'),
+  winnerName: () => document.querySelector('[data="winner-name"]'),
+  activeRun: () => document.querySelector('[data="active-run"]'),
+  arraySize: () => document.querySelector('[data="array-size"]'),
 };
-
-const arg = new Array(10000000).fill(0).map((_, i) => i);
-
-const exp = arg.map(num => num * 2);
 
 const loops = [
   reverseForLoop,
   minusMinusWhile,
   whileMinusMinus,
   whilePlusPlus,
-  forMinusEqualSaveLength,
+  forMinusEqual,
   forMinusMinus,
-  forMinusMinusSaveLength,
   forPlusPlusSaveLength,
   forPlusPlus,
   forPlusEqual,
@@ -176,39 +161,189 @@ const test = ({ callback, argument, expected }) => {
   return { name, testPassed, elapsed };
 };
 
-const generateTable = data => {
-  let table = '<table>';
+const makeTableBody = data => {
+  let tbody = '<tbody>';
 
-  const headers = `
-  <tr>
-    <th>Name</th>
-    <th>Test passed</th>
-    <th>Elapsed</th>
-  </tr>`;
+  data.forEach(({ name, testPassed, avgElapsed }) => {
+    let totalAvg = 0;
+    const avgArr = Object.values(avgElapsed);
 
-  table += headers;
+    let elapsedRow = avgArr.reduce((acc, avg) => {
+      totalAvg += Number(avg);
+      return `${acc}<td>${avg}</td>`;
+    }, '');
 
-  data.forEach(({ name, testPassed, elapsed }) => {
-    table += `
+    totalAvg = (totalAvg / avgArr.length).toFixed(3);
+
+    elapsedRow += `<td>${totalAvg}</td>`;
+
+    tbody += `
     <tr>
       <td>${name}</td>
       <td>${String(testPassed)}</td>
-      <td>${elapsed}</td>
+      ${elapsedRow}
     </tr>`;
   });
 
-  table += '</table>';
+  tbody += '</tbody>';
 
-  return table;
+  return tbody;
 };
 
-const items = loops
-  .map(cb => test({ callback: cb, argument: arg, expected: exp }))
-  .sort((a, b) => a.elapsed - b.elapsed);
+const store = {
+  activeRun: 0,
+  arraySize: 10000,
+  reps: [10, 100, 1000, 10000, 100000],
+  ids: [],
+  entities: {},
+};
+const arg = new Array(store.arraySize).fill(0).map((_, i) => i);
 
-const renderToRoot = child => {
-  const root = getRef.root();
-  root.insertAdjacentHTML('beforeend', child);
+const exp = arg.map(num => num * 2);
+
+// const run: {
+//   name: string;
+//   testPassed: boolean;
+//   elapsed: number;
+// }
+
+//   runs: {
+//    10: number[],
+//    100: number[]
+//   }
+
+const runTests = rep => {
+  for (let i = loops.length - 1; i >= 0; --i) {
+    const fn = loops[i];
+
+    const { name, testPassed, elapsed } = test({
+      callback: fn,
+      argument: arg,
+      expected: exp,
+    });
+
+    const { entities } = store;
+
+    const runs = entities[name]?.runs ?? {};
+    const runsRep = runs[rep] ?? [];
+    runsRep.push(elapsed);
+
+    entities[name] = {
+      ...entities[name],
+      name,
+      testPassed,
+      runs: {
+        ...runs,
+        [rep]: runsRep,
+      },
+    };
+  }
 };
 
-renderToRoot(generateTable(items));
+const runRep = rep => {
+  for (let i = rep - 1; i >= 0; --i) {
+    runTests(rep);
+  }
+};
+
+const loopOverReps = () => {
+  for (let i = store.reps.length - 1; i >= 0; --i) {
+    runRep(store.reps[i]);
+  }
+};
+
+const onClickFindFastestLoop = () => {
+  loopOverReps();
+
+  return Object.values(store.entities)
+    .map(({ name, testPassed, runs }) => ({
+      name,
+      testPassed,
+      avgElapsed: Object.entries(runs).reduce((acc, [rep, runsRep]) => {
+        const sum = runsRep.reduce(
+          (totalElapsed, elapsed) => totalElapsed + elapsed,
+          0
+        );
+
+        const avgElapsedPerRep = (sum / runsRep.length).toFixed(3);
+
+        return { ...acc, [rep]: avgElapsedPerRep };
+      }, {}),
+    }))
+    .sort((a, b) => a.avgElapsed[store.reps[0]] - b.avgElapsed[store.reps[0]]);
+};
+
+const Button = () => `
+<button class="run-button" type="button" data="run">
+  Run
+</button>`;
+
+const Progress = () => `
+<label class="progress-label" data="progress-label">
+  Running tests:
+  <progress class="progress" data="progress" max="100">0 %</progress>
+</label>
+`;
+
+/**
+ * @param {number} ms
+ */
+const wait = async ms =>
+  new Promise(res => {
+    setTimeout(res, ms);
+  });
+
+const container = getRef.container();
+const arraySizeRef = getRef.arraySize();
+container.insertAdjacentHTML('afterbegin', Button());
+
+const runTestsButton = getRef.runTestsButton();
+const activeRunRef = getRef.activeRun();
+
+const runTestsListener = async () => {
+  const disableButton = () => {
+    runTestsButton.disabled = true;
+    runTestsButton.removeEventListener('click', runTestsListener);
+  };
+
+  const enableButton = async () => {
+    runTestsButton.disabled = false;
+    runTestsButton.addEventListener('click', runTestsListener, {
+      passive: true,
+    });
+  };
+
+  disableButton();
+
+  const updateRunsCount = () => {
+    arraySizeRef.textContent = `Array size #${store.arraySize}`;
+    store.activeRun += 1;
+    activeRunRef.textContent = `Active run #${store.activeRun}`;
+  };
+
+  const tableBodyRef = getRef.tableBody();
+  tableBodyRef.innerHTML = '';
+
+  const tableContainer = getRef.tableContainer();
+
+  const createTableWithResults = async () => {
+    tableContainer.insertAdjacentHTML('beforeend', Progress());
+
+    const items = onClickFindFastestLoop();
+
+    const makeHardWork = () => {
+      const progressLabel = getRef.progressLabel();
+      progressLabel.remove();
+      tableBodyRef.insertAdjacentHTML('beforeend', makeTableBody(items));
+      updateRunsCount();
+
+      setTimeout(enableButton, 0);
+    };
+
+    setTimeout(makeHardWork, 0);
+  };
+
+  setTimeout(createTableWithResults, 0);
+};
+
+runTestsButton.addEventListener('click', runTestsListener, { passive: true });
