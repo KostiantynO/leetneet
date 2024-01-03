@@ -106,3 +106,66 @@ th {
 .winner-name {
   font-weight: bold;
 }
+
+.nav {
+  position: relative;
+
+  display: flex;
+  gap: 20px;
+
+  padding: 0 50px;
+
+  background-color: #212121;
+  border-radius: 8px;
+}
+
+.nav-top-border {
+  position: absolute;
+  bottom: 99%;
+  left: 0;
+  z-index: -1;
+
+  width: 180px;
+  height: 40px;
+
+  will-change: transform;
+  clip-path: url(#menu);
+  background-color: #212121;
+  transform: scaleY(0);
+  transition: 210ms transform cubic-bezier(0.4, 0, 0.2, 1);
+
+  transform-origin: bottom;
+}
+
+.nav-top-border.active {
+  transform: scaleY(100%);
+}
+
+.nav-button-wrapper.active .nav-button {
+  transform: translate3d(0, -0.5rem, 0);
+  background-color: #ff8c00;
+}
+
+.nav-button {
+  padding: 15px;
+
+  cursor: pointer;
+  background-color: transparent;
+  border: none;
+  border-radius: 100%;
+
+  transition: 210ms transform cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nav-button-svg {
+  width: 50px;
+  height: 50px;
+  fill: #fff;
+  stroke: #fff;
+  pointer-events: none;
+}
+
+.svg-container {
+  width: 0;
+  height: 0;
+}

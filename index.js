@@ -293,9 +293,10 @@ const wait = async ms =>
     setTimeout(res, ms);
   });
 
-const container = getRef.container();
 const arraySizeRef = getRef.arraySize();
-container.insertAdjacentHTML('afterbegin', Button());
+
+const tableContainer = getRef.tableContainer();
+tableContainer.insertAdjacentHTML('afterbegin', Button());
 
 const runTestsButton = getRef.runTestsButton();
 const activeRunRef = getRef.activeRun();
@@ -324,8 +325,6 @@ const runTestsListener = async () => {
   const tableBodyRef = getRef.tableBody();
   tableBodyRef.innerHTML = '';
 
-  const tableContainer = getRef.tableContainer();
-
   const createTableWithResults = async () => {
     tableContainer.insertAdjacentHTML('beforeend', Progress());
 
@@ -347,3 +346,36 @@ const runTestsListener = async () => {
 };
 
 runTestsButton.addEventListener('click', runTestsListener, { passive: true });
+
+/* ========================== */
+
+const navButtonsWrappers = document.querySelectorAll(
+  '[data="nav-button-wrapper"]'
+);
+
+const nav = document.querySelector('[data="nav"]');
+
+const toggleMenu = ({
+  target: {
+    nodeName,
+    parentNode: { dataset },
+  },
+}) => {
+  if (nodeName !== 'BUTTON') return;
+  const id = Number(dataset.id);
+
+  for (let i = 0, len = navButtonsWrappers.length; i < len; i += 1) {
+    const button = navButtonsWrappers[i];
+    const isActive = button.classList.contains('active');
+
+    if (i === id) button.classList.add('active');
+    else if (isActive) button.classList.remove('active');
+  }
+
+  const navTopBorder = document.querySelector('[data="nav-top-border"]');
+  navTopBorder.classList.add('active');
+
+  navTopBorder.style.transform = `scaleY(100%) translateX(${100 * id}px)`;
+};
+
+nav.addEventListener('click', toggleMenu, { passive: true });
